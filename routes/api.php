@@ -2,17 +2,13 @@
 
 use Illuminate\Http\Request;
 
-
-Route::post('login', 'API\UserController@login');
-Route::post('register', 'API\UserController@register');
-
-/* Caso o email esteja configurado utilizar ->middleware('verified'); nas rotas
-** que necesitam que o email estejam validado para serem acessadas
-*/
-Route::group(['middleware' => 'auth:api'], function(){
-  Route::get('details', 'API\UserController@details');
-  Route::get('logout', 'API\UserController@logout');
-  Route::post('update', 'API\UserController@update');
-  Route::post('changepassword', 'API\UserController@changepassword');
-  Route::get('delete', 'API\UserController@delete');
+Route::prefix('user')->group(function () {
+  Route::put('login', 'API\UserController@login');
+  Route::post('', 'API\UserController@register');
+  Route::group(['middleware' => 'auth:api'], function(){
+    Route::put('logout', 'API\UserController@logout');
+    Route::get('/{id}', 'API\UserController@details');
+    Route::delete('/{id}', 'API\UserController@delete');
+    Route::put('/{id}', 'API\UserController@update');
+  });
 });

@@ -54,30 +54,31 @@ class UserController extends Controller {
         $user = Auth::user();
         $user->token()->revoke();
         return response()->json([
-            'message' => 'Successfully logged out'
-        ]);
+              'message' => 'Successfully logged out'  ], $this-> successStatus);
     }
 
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'email' => 'required|string|email|unique:users',
-            'cpf' => 'required|unique:users|digits:11|numeric',
+            'name' => 'string',
+            'email' => 'string|email|unique:users',
+            'cpf' => 'unique:users|digits:11|numeric',
+            'password' => '',
+            'confirm_password' => 'same:password',
         ]);
         if ($validator->fails()) {
             return response()->json(['error'=>$validator->errors()], 401);
         }
-        $user = Auth::user();
+        $user = User::findOrFail($id);
         $input = $request->all();
-        $user->name = $input['name'];
-        $user->email = $input['email'];
-        $user->cpf = $input['cpf'];
+        $user->name = in_array("name", $input) ? $input['name'] :  $user->name;
+        $user->email = in_array("email", $input) ? $input['email'] :  $user->email;
+        $user->cpf = in_array("cpf", $input) ? $input['cpf'] :  $user->cpf;
+        $user->password = in_array("password", $input) ? bcrypt($input['password']) :  $user->password;
         $user->save();
         $success['name'] =  $user->name;
         $success['cpf'] =  $user->cpf;
         $success['email'] =  $user->email;
-
         return response()->json(['success'=>$success], $this-> successStatus);
     }
 
@@ -106,13 +107,13 @@ class UserController extends Controller {
       $user->token()->revoke();
       $user->delete();
       return response()->json([
-          'message' => 'User deleted successfully'
-      ]);
+          'message' => 'User deleted successfully'] , 204
+      );
     }
 
-    public function details()
+    public function details($id)
     {
-        $user = Auth::user();
+        $user = User::findOrFail($id);
         $success['name'] =  $user->name;
         $success['cpf'] =  $user->cpf;
         $success['email'] =  $user->email;
