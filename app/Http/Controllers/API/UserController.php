@@ -101,10 +101,9 @@ class UserController extends Controller {
         ], $this-> successStatus);
     }
 
-    public function delete(Request $request)
+    public function delete($id)
     {
-      $user = Auth::user();
-      $user->token()->revoke();
+      $user = User::findOrFail($id);
       $user->delete();
       return response()->json([
           'message' => 'User deleted successfully'] , 204

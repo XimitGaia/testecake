@@ -129,7 +129,22 @@ class UserTest extends TestCase
         $response->assertStatus(200);
     }
 
-
+    public function testUpdate()
+    {
+      $user = User::all()->first();
+      $attributes = [
+          'email' => $this->faker->Email(),
+          'name' => 'TEste',
+          'cpf' => rand(00000000000, 99999999999),
+          'password' => 'Service',
+          'confirm_password' => 'Service',
+        ];
+      $response = $this->withHeaders([
+          'Authorization' => 'Bearer ' . $this->getToken(),
+          'Accept' => 'application/json'
+      ])->json('PUT', "/api/user/{$user->id}", $attributes);
+      $response->assertStatus(200);
+    }
 
     public function testUpdatepartial()
     {
