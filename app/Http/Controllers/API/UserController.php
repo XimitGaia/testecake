@@ -46,7 +46,7 @@ class UserController extends Controller {
         $success['name'] =  $user->name;
         $success['cpf'] =  $user->cpf;
         $success['email'] =  $user->email;
-        return response()->json(['success'=>$success], $this-> successStatus);
+        return response()->json(['success'=>$success], 201);
     }
 
     public function logout(Request $request)
